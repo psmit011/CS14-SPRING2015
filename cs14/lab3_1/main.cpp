@@ -1,0 +1,44 @@
+#include <iostream>
+#include "lab3.h"
+using namespace std;
+
+int main(){
+	cout<<"Hello World"<<endl;
+	cout<<"Testing constructor"<<endl;
+	TwoStackFixed<int> stack1(500, 6);
+	cout<<"printing empty stack"<<endl;
+	for(int i = 0; i < 5; i++){
+		cout<<" Cool "<<endl;
+	}
+
+	cout<<"Testing push Stack 1: 1,2,3,4,5"<<endl;
+	stack1.pushStack1(1);
+	stack1.pushStack1(2);
+	stack1.pushStack1(3);
+	stack1.pushStack1(4);
+	stack1.pushStack1(5);
+
+	cout<<"Testing pop Stack 1"<<endl;
+	stack1.popStack1();
+	stack1.popStack1();
+	stack1.popStack1();
+	stack1.popStack1();
+	stack1.popStack1();
+	stack1.popStack1();
+
+	cout<<"Testing push Stack 2: 1,2,3,4,5"<<endl;
+	stack1.pushStack2(1);
+	stack1.pushStack2(2);
+	stack1.pushStack2(3);
+	stack1.pushStack2(4);
+	stack1.pushStack2(5);
+
+	cout<<"Testing pop Stack 2"<<endl;
+	stack1.popStack2();
+	stack1.popStack2();
+	stack1.popStack2();
+	stack1.popStack2();
+	stack1.popStack2();
+	stack1.popStack2();
+	return 0;
+}
