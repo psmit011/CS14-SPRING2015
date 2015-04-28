@@ -1,0 +1,456 @@
+#ifndef _MYLIST_H_
+#define _MYLIST_H_
+
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <string.h>
+#include <cassert>
+
+using namespace std;
+
+struct Node{
+	Node(){
+		next = NULL;
+	}
+	Node(char val, Node* nodePtr = NULL){
+		value = val;
+		next = nodePtr;
+	}
+	
+	char value;	//holds a single character	
+	Node *next;	//holds a pointer to the next item in the list
+};
+
+class MyList{
+	private:
+		Node* head;
+	public:
+	
+		/*************************************************************************
+		*List of constructors
+		*MyList()- default constructor
+		*MyList(const MyList&) - copy constructor
+		*MyList(const string&) - creates a new list based on characters of string
+		*MyList(const char*  ) - creates a new list based on string literal******/
+		MyList();
+		MyList(const MyList& );
+		MyList(const string& );
+		MyList(const char* );
+		~MyList();
+
+		/*************************************************************************
+		*List of Mutators
+		*void push_front(char) 	- pushes value onto the front of the list
+		*void push_back(char)  	- inserts element at tail of list
+		*void pop_front()	- removes first element of the list
+		*void insert_at_pos(int, char)- inserts element at specfied position*****/	
+		void push_front(char);
+		void push_back(char);
+		void pop_front();
+		void insert_at_pos(int , char);
+		void pop_back();	
+		void reverse();
+		void swap(int , int);
+
+		/*************************************************************************
+		*List of Accessors
+		*void print()const - print the contents of the list
+		*int find(char )const - searhes list for contents returns -1 if not found
+		*int size()const - returns the size of the list***************************/
+		void print()const;
+		int find(char )const;
+		int find(MyList& )const;
+		int size()const;
+
+		/*************************************************************************
+		*List of Operators to be overloaded
+		*MyList& operator=(const MyList& ) - return list1 = list2
+		*char& operator[](const Mylist& ) - return element at [i]
+		*MyList& operator+(const MList& ) - L1 = L1 + L2 adjoins two lists*******/
+		MyList& operator=(const MyList& );
+		MyList& operator+(const MyList& );
+		char& operator[](const int);
+};
+
+
+/*Destructor: Use previousy defined function pop_front to unallocate memory O(n)*/
+MyList::~MyList(){
+	while(head != NULL){
+		pop_front();
+	}
+}
+
+
+/*Default constructor value(0) head->next(NULL) O(1)*/
+MyList::MyList()
+{
+	head = new Node();
+	head = NULL;
+}
+
+/*String Literal constructor if string == empty default, else chain all variables O(n)*/
+MyList::MyList(const char *str)
+{
+	/*****************************
+	*Check contents of the string*/
+	if(*str == 0){
+		head = new  Node();
+		head = NULL;
+	}
+	else
+	{
+		int sizeStr = strlen(str);
+		head = new Node(str[(sizeStr-1)]);
+		for(int i = (sizeStr-2); i >= 0 ; i--){
+			push_front(static_cast<char>(str[i]));
+		}
+	}	
+}
+
+/*Creates a chain based upon the size of the string O(n)*/
+MyList::MyList(const string& str)
+{
+	/*
+	*Check contents of the string
+	*/
+	if(str == ""){
+		head = new  Node();
+		head = NULL;
+	}
+	else
+	{
+		string::const_iterator it = (str.end() - 1);	//create an iterator point it to last element
+		head = new Node(*it);	//create a new node pointing to last element of string
+		it--;
+		for(; it != str.begin(); it--){
+			push_front(static_cast<char>(*it));
+		}
+		push_front(static_cast<char>(*str.begin()));
+	}
+}
+
+/*Creates a list based on the passed in list O(n)*/
+MyList::MyList(const MyList& lst){
+	//check to see if list is empty
+	if(lst.head == NULL){
+		head = new Node();
+		head = NULL;
+	}
+	else
+	{
+		Node* temp = lst.head;	
+		char temp_b = temp->value;
+		this->head = new Node(temp_b);
+		temp = temp->next;
+		while(temp != NULL){
+			char temp_a = temp->value;
+			this->push_front(temp_a);
+			temp = temp->next;
+		}
+		this->reverse();
+	}
+}
+
+/*add a value to the front of the List*/
+void MyList::push_front(char value){
+
+	/*************************************************
+	*Create a new node and set its next value to null*/
+	head = new Node(value, head);
+
+}
+
+int MyList::find(MyList& QueryStr)const{
+	int size1 = QueryStr.size();
+	int size2 = this->size();
+	if(size1 > size2){		
+		return -1;
+	}
+	if(size2 == 0 || size1 == 0){
+		return -1;
+	}
+	else
+	{
+		Node *temp = head, *temp2 = head;
+		Node *QueryTemp = QueryStr.head, *temp3 = QueryStr.head;
+		for(int i = 0; i <= (size2-size1); i++){
+			if(temp2->value == temp3->value){
+				int t = 0;
+				temp = temp2;
+				QueryTemp = temp3;
+				for(int y = 0; y < (size1); y++){
+					if(QueryTemp->value == temp->value){
+						t++;
+					}
+					QueryTemp = QueryTemp->next;
+					temp = temp->next;
+				}
+				if(t == size1){
+					return i;
+				}
+			}
+			temp2 = temp2->next;		
+		}
+	}	
+	return -1;
+}
+
+/*Add a value to the tail of the node*/
+void MyList::push_back(char value){
+	//check to see if list is empty
+	if(head == NULL){
+		head = new Node(value, head);
+		head = NULL;
+	}
+	else
+	{
+		//traverse the list
+		Node *temp = head;
+		if(temp->next == NULL){
+			temp->next = new Node(value);
+		}
+		else
+		{
+			while(temp->next != NULL){
+				temp = temp->next;
+			}
+			temp->next = new Node(value);
+		}
+		temp = temp->next;
+		
+	}
+}	
+
+/*print the contents of the entire list*/
+void MyList::print()const
+{
+	if(head == NULL){
+		cout<<"List is empty"<<endl;
+		return;
+	}
+	else
+	{
+		
+		Node *temp = head;	
+		while(temp != NULL){
+			cout<<temp->value;
+			temp = temp->next;
+		}
+		cout<<endl;
+	}
+}
+
+/*remove the first element of the List*/
+void MyList::pop_front(){
+	if(head == NULL){
+		cout<<"list is empty cannot pop"<<endl;
+	}
+	else
+	{
+		Node *temp = head;
+		head = head->next;
+		delete temp;
+	}
+}
+
+/*insert element dta at position position*/
+void MyList::insert_at_pos(int position, char data){
+	//throw a segfault if position out of bounds
+	if(position > (this->size()-1)){
+		cout<<"attempted to write to an out of bounds index issuing a seg fault."<<endl;
+		cout.flush();
+		assert(position > (this->size()-1));
+	}
+	
+	//data Good
+	Node *temp = head;
+	int i;
+	//traverse list until position
+	for(i = 0; (i < (position-1)) && (temp->next != NULL); i++, temp = temp->next){
+		
+	}
+	if(temp->next == NULL && i < position){
+		cout<<"Position greater than bound"<<endl;
+		cout<<"inserting at end of node"<<endl;
+		Node *dataPtr = new Node(data);
+		temp->next = dataPtr;
+	}
+	else
+	{
+		Node *dataPtr = new Node(data);
+		dataPtr->next = temp->next;
+		temp->next = dataPtr;
+	}		
+
+}
+
+int MyList::find(char key)const{
+	if(head == NULL){
+		return -1;	
+	}
+	else
+	{
+		Node *temp = head;
+		for(int i = 0; temp->next != NULL; temp = temp->next, i++){
+			if(temp->value ==  key){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+}
+
+int MyList::size()const{
+	if(head == NULL){
+		return 0;
+	}
+	else
+	{
+		int size = 0;
+		Node *temp = head;
+		for(size = 0; temp != NULL; size++, temp = temp->next);
+			return size;
+	}
+}
+
+void MyList::pop_back(){
+	if(head == NULL){
+		cout<<"Cannot pop from empty stack"<<endl;
+	}
+	else
+	{
+		int sizeStruct = this->size();
+		Node *temp = head;
+		for(int i = 0;temp->next != NULL && i < (sizeStruct - 1); temp = temp->next, i++);
+		Node *dataPtr = temp->next;
+		temp->next = NULL;
+		delete dataPtr;
+	}
+}
+
+char& MyList::operator[](const int i){
+	if(head == NULL){
+		assert(head->next == NULL);	
+	}
+	else
+	{
+		Node *temp = head;
+		if(i > this->size()){
+			cout<<"Out of bounds issuing a segfault"<<endl;
+			cout.flush();
+			assert(i > this->size());
+		}
+		for(int j = 0; j < i ; temp = temp->next, j++);
+			
+		return temp->value;
+	}
+	return this->head->value;
+}
+
+void MyList::reverse(){
+	if(head == NULL){
+		assert(head->next == NULL);
+	}	
+	else
+	{
+		Node *temp1 = head;
+		MyList *temp = new MyList();
+		while(temp1 != NULL){
+			temp->push_front(static_cast<char>(temp1->value));	
+			temp1 = temp1->next;
+		}
+		head = temp->head;
+	}
+}
+
+/*
+*Swap the contents of the list at pos->a with the contents of the list pos->b
+*frst must check that the user is not asking me to swap something which does not exist
+*if it exists then we must use a temp  variable o replace the variale which will be swapped
+*/
+void MyList::swap(int position_a, int position_b){
+	//Check to see if they passed in the same value to swap
+	if(position_a == position_b){
+		cout<<"you attempted to swap the same elements I do nothing"<<endl;
+		return;
+	}
+	//Check to see if index is out of bounds of list
+	if(position_b > this->size() || position_a >this->size()){
+		cout<<"one of your indices is out of bounds"<<endl;
+		return;
+	}
+	else
+	{
+		
+		//make sure position_a is greater than position_b	
+		if( position_a > position_b){
+			int temp = position_b;
+			position_b = position_a;
+			position_a = temp;
+		}
+		
+		Node * temp = head;
+		char temp_a = '0', temp_b = '0';
+		
+		//traverse the list
+		//position_a is smaller than position_b
+		for(int	i = 0; temp->next != NULL ; i++, temp = temp->next){
+			if(i == position_a){
+				temp_a = temp->value;
+			}
+			if(i == position_b){
+				temp_b = temp->value;
+				temp->value = temp_a;
+			}
+
+		}
+		//reset temp = head;
+		temp = head;
+		//re-traverse the list only until position a
+		for(int i = 0; i < position_a; i++, temp = temp->next);
+			temp->value = temp_b;		
+	}
+	
+
+}
+
+/*overloaded = operator will copy code form copy constructor*/
+MyList& MyList::operator=(const MyList& lst){
+	//check to see if list is empty
+	if(lst.head == NULL){ 
+		cout<<"head = 0";
+	}
+	else
+	{
+		head = new Node();
+		Node *temp = lst.head;
+		int sizeList = lst.size();
+		
+		for(int i = (sizeList-1); i >= 0 ; i--, temp = temp->next){
+			push_front(static_cast<char>(temp->value));
+		}
+	}
+	return (*this);
+}
+MyList& MyList::operator+(const MyList& lst){
+	//check the passed in list
+	if(lst.head == NULL){
+		return (*this);	//return list 1
+	}
+	else
+	{
+		Node *temp = lst.head;
+		while(temp != NULL){
+			push_front(temp->value);
+			temp = temp->next;
+		}
+		return(*this);
+	}
+}
+
+#endif
+
+
+

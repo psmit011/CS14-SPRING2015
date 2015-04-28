@@ -1,0 +1,16 @@
+#ifndef _NODE_H_
+#define _NODE_H_
+#include <iostream>
+struct Node{
+	Node(){
+		next = NULL;
+	}
+	Node(char val, Node* ptr = NULL){
+		value = val;
+		next = ptr;
+	}
+	char value;	//holds a single character	
+	Node *next;	//holds a pointer to the next item in the list
+};
+
+#endif
